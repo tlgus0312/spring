@@ -11,4 +11,9 @@ public class HomeController {
     public String home() {
         return "안녕";
     }
+    @GetMapping("/")
+    public String root() {
+        //redirect :302  이 분을 찾아가 보세요 라고 응답
+        return "redirect:/question/list";
+    }
 }
