@@ -99,4 +99,17 @@ class ApplicationTests {
 		q.setSubject("자존감/마음건강");
 		questionRepository.save(q);
 	}
+
+	//데이터 삭제
+	@Test
+	@DisplayName("데이터 삭제하기")
+	void t008(){
+		//select count(*) from question;
+		assertEquals(4, questionRepository.count());
+		Optional<Question> oq = questionRepository.findById(1);
+		assertTrue(oq.isPresent());
+		Question q = oq.get();
+		questionRepository.delete(q);
+		assertEquals(3, questionRepository.count());
+	}
 }
