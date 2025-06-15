@@ -1,4 +1,4 @@
-package com.sihe.spring.boundedContexthome;
+package com.sihe.spring.boundedContext.home;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
