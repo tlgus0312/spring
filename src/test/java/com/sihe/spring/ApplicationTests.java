@@ -4,11 +4,13 @@ import com.sihe.spring.boundedContext.answer.Answer;
 import com.sihe.spring.boundedContext.answer.AnswerRepository;
 import com.sihe.spring.boundedContext.question.Question;
 import com.sihe.spring.boundedContext.question.QuestionRepository;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -62,6 +64,7 @@ class ApplicationTests {
 		//답변 1개 생성
 		Answer a1 = new Answer();
 		a1.setQuestion(q1);//어떤 질문의 답변인지 알기 위해서 question 객체가 필요
+		a1.setContent("어떤점에 의욕이 사라졌을까?");
 
 		q1.addAnswer(a1);
 
@@ -165,8 +168,10 @@ class ApplicationTests {
 		assertEquals(3, questionRepository.count());
 	}
 
+	@Transactional
 	@Test
 	@DisplayName("답변 데이터 저장")
+	@Rollback(false)
 	void t009(){
 		Optional<Question> oq = questionRepository.findById(2);
 		//질문을 가져오기
@@ -174,7 +179,7 @@ class ApplicationTests {
 		Question q = oq.get();
 
 		Answer a = new Answer();
-		a.setContent("네 자동으로 생성됩니다.");
+		a.setContent("운동을 해보는건 어때?");
 		a.setQuestion(q);  // 어떤 질문의 답변인지 알기위해서 Question 객체가 필요하다.
 		a.setCreateDate(LocalDateTime.now());
 		answerRepository.save(a);
@@ -186,5 +191,20 @@ class ApplicationTests {
 		assertTrue(oa.isPresent());
 		Answer a = oa.get();
 		assertEquals(1, a.getQuestion().getId());
+	}
+
+	@Transactional //findbyid메서드를 실행하고 나면  db가 끝어지기 때문에 메서드가 종료될때까지 db유지
+	@Test
+	@DisplayName("질문을 통해 답변 찾기 ")
+	@Rollback(false)//테스트 메서드가 끝난 후에도 트랜잭션이 콜백되지 않고 커밋된다.
+	void t011(){
+		Optional<Question> oq = questionRepository.findById(1);//db가 연결
+		assertTrue(oq.isPresent());
+		Question q = oq.get();
+
+		List<Answer> answerList = q.getAnswerList();
+
+		assertEquals(1, answerList.size());
+		assertEquals("어떤점에 의욕이 사라졌을까?", answerList.get(0).getContent());;
 	}
 }
