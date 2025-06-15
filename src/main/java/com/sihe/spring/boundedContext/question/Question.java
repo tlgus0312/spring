@@ -3,20 +3,17 @@ package com.sihe.spring.boundedContext.question;
 
 import com.sihe.spring.boundedContext.answer.Answer;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity//spring boot가 question을 entity로 봄
+@ToString
 public class Question {
     @Id//primary key
     @GeneratedValue(strategy = GenerationType.IDENTITY)// Auto_increment
