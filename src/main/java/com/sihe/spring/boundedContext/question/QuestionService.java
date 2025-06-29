@@ -10,12 +10,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+
 @Service
 @RequiredArgsConstructor
 public class QuestionService {
 
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
+    private final CategoryRepository categoryRepository;
 
     public List<Question> findAll() {
         return questionRepository.findAll();
@@ -28,6 +30,9 @@ public class QuestionService {
         return question.get();
 
     }
+    public List<Question> findBySubjectLike(String subject) {
+        return questionRepository.findBySubjectLike("%" + subject + "%");
+    }
 
     public Answer create(Question question, String content) {
         Answer answer = new Answer();
@@ -37,6 +42,41 @@ public class QuestionService {
         answerRepository.save(answer);
 
         return answer;
+    }
+    public List<Category> findAllCategories() {
+        return categoryRepository.findAll();
+    }
+    public Category getCategoryById(Integer categoryId) {
+        Optional<Category> category = categoryRepository.findById(categoryId);
+        if (category.isEmpty()) throw new DataNotFoundException("category not found");
+        return category.get();
+    }
+
+
+
+    public List<Question> getQuestionsByCategory(Integer categoryId) {
+        return questionRepository.findByCategoryId(categoryId);
+    }
+
+    public List<Question> searchQuestions(String keyword) {
+        return questionRepository.findBySubjectContainingOrContentContaining(keyword, keyword);
+    }
+
+    public List<Question> searchInCategory(String keyword, Integer categoryId) {
+        return questionRepository.findByCategoryIdAndSubjectContainingOrContentContaining(
+                categoryId, keyword, keyword);
+    }
+
+    public Question createQuestion(String subject, String content, Integer categoryId) {
+        Category category = getCategoryById(categoryId);
+
+        Question question = new Question();
+        question.setSubject(subject);
+        question.setContent(content);
+        question.setCategory(category);
+        question.setCreateDate(LocalDateTime.now());
+
+        return questionRepository.save(question);
     }
 }
 

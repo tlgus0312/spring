@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>고민 상담 카테고리</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/style.css?v=2025062901}" />
+    <style>
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            padding: 20px 0;
+        }
+
+        .category-grid .card {
+            background: white;
+            border: none !important;  /* 기존 테두리 제거 */
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            overflow: hidden;
+        }
+
+        .category-grid .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            text-decoration: none;
+            color: inherit;
+            background-color: inherit !important;  /* 기존 hover 배경색 제거 */
+        }
+
+        .category-grid .card.open {
+            transform: scale(1.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .category-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        .category-grid .card.open .category-icon {
+            font-size: 3.5em;
+            transform: rotate(10deg);
+        }
+
+        .category-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            transition: all 0.3s ease;
+        }
+
+        .category-grid .card.open .category-name {
+            font-size: 1.7em;
+            color: #e74c3c;
+        }
+
+        .category-description {
+            color: #7f8c8d;
+            font-size: 1em;
+            line-height: 1.5;
+            transition: all 0.3s ease;
+        }
+
+        .category-grid .card.open .category-description {
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .category-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .category-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+        .category-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
+        .category-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; }
+
+        .category-1:hover, .category-2:hover, .category-3:hover, .category-4:hover {
+            color: white;
+        }
+
+        .category-1 .category-name, .category-1 .category-description { color: white; }
+        .category-2 .category-name, .category-2 .category-description { color: white; }
+        .category-3 .category-name, .category-3 .category-description { color: white; }
+        .category-4 .category-name, .category-4 .category-description { color: white; }
+
+        .category-1.open .category-name, .category-1.open .category-description { color: white; }
+        .category-2.open .category-name, .category-2.open .category-description { color: white; }
+        .category-3.open .category-name, .category-3.open .category-description { color: white; }
+        .category-4.open .category-name, .category-4.open .category-description { color: white; }
+    </style>
+</head>
+<body class="main-page">
+<div class="container">
+    <h1>어떤 고민이 있으신가요?</h1>
+
+    <div class="category-grid">
+        <a th:each="category : ${categoryList}"
+           th:href="@{/question/category/{id}(id=${category.id})}"
+           th:class="'category-item category-' + ${category.id}"
+           style="border: none !important; outline: none !important;">
+
+            <div class="category-icon">
+                    <span th:switch="${category.id}">
+                        <span th:case="1">💚</span>
+                        <span th:case="2">🤝</span>
+                        <span th:case="3">💕</span>
+                        <span th:case="4">🤔</span>
+                    </span>
+            </div>
+
+            <div class="category-name" th:text="${category.name}">카테고리명</div>
+
+            <div class="category-description">
+                    <span th:switch="${category.id}">
+                        <span th:case="1">자신감과 마음의 평안을 찾아보세요</span>
+                        <span th:case="2">사람들과의 관계에서 생기는 고민들</span>
+                        <span th:case="3">연애와 이성 관계의 다양한 문제들</span>
+                        <span th:case="4">일상에서 마주하는 선택의 순간들</span>
+                    </span>
+            </div>
+        </a>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+        const cards = document.querySelectorAll('.category-item');
+        cards.forEach(function(card) {
+            card.addEventListener('click', function() {
+                card.classList.toggle('open');
+            });
+        });
+    });
+</script>
+</body>
+</html>

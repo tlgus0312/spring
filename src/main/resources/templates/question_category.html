@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="${categoryName} + ' 관련 질문 목록'">질문 목록</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/style.css?v=2025062902}" />
+  <style>
+    body {
+      font-family: 'Malgun Gothic', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f8f9fc;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* 헤더 섹션 */
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 30px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .category-title {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      color: #2c3e50;
+    }
+
+    .category-subtitle {
+      color: #7f8c8d;
+      font-size: 1.1em;
+      margin-bottom: 20px;
+    }
+
+    .question-count {
+      background: #3498db;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      display: inline-block;
+    }
+
+    /* 검색창 + 새글작성 버튼 */
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .search-form {
+      display: flex;
+      flex: 1;
+      max-width: 400px;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 2px solid #e0e6ed;
+      border-radius: 25px 0 0 25px;
+      border-right: none;
+      font-size: 1em;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: #3498db;
+    }
+
+    .search-btn {
+      padding: 12px 20px;
+      background: #3498db;
+      color: white;
+      border: 2px solid #3498db;
+      border-radius: 0 25px 25px 0;
+      cursor: pointer;
+      font-size: 1em;
+      transition: all 0.3s ease;
+    }
+
+    .search-btn:hover {
+      background: #2980b9;
+      border-color: #2980b9;
+    }
+
+    .create-btn {
+      padding: 12px 24px;
+      background: #e74c3c;
+      color: white;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .create-btn:hover {
+      background: #c0392b;
+      text-decoration: none;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+    }
+
+    /* 테이블 스타일 */
+    .question-table {
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+
+    .question-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .question-table th {
+      background: #f8f9fa;
+      padding: 15px;
+      text-align: left;
+      font-weight: bold;
+      color: #2c3e50;
+      border-bottom: 2px solid #e9ecef;
+    }
+
+    .question-table td {
+      padding: 15px;
+      border-bottom: 1px solid #f1f3f4;
+    }
+
+    .question-table tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    .question-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .question-number {
+      background: #3498db;
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.9em;
+    }
+
+    .question-link {
+      color: #2c3e50;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .question-link:hover {
+      color: #3498db;
+      text-decoration: none;
+    }
+
+    .question-date {
+      color: #7f8c8d;
+      font-size: 0.9em;
+    }
+
+    /* 뒤로가기 버튼 */
+    .back-button {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #34495e;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      transition: background 0.3s ease;
+    }
+
+    .back-button:hover {
+      background: #2c3e50;
+      text-decoration: none;
+      color: white;
+    }
+
+    /* 빈 목록 메시지 */
+    .empty-message {
+      text-align: center;
+      padding: 60px 20px;
+      color: #7f8c8d;
+      font-size: 1.2em;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .empty-icon {
+      font-size: 3em;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    /* 반응형 */
+    @media (max-width: 768px) {
+      .action-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-form {
+        max-width: none;
+        margin-bottom: 15px;
+      }
+
+      .question-table {
+        overflow-x: auto;
+      }
+
+      .question-table table {
+        min-width: 600px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <a href="/question/list" class="back-button">← 카테고리 선택으로 돌아가기</a>
+
+  <div class="header">
+    <h1 class="category-title" th:text="${categoryName}">카테고리명</h1>
+    <p class="category-subtitle">이 카테고리의 다양한 고민들을 확인해보세요</p>
+    <span class="question-count" th:text="${#lists.size(questionList)} + '개의 질문'">0개의 질문</span>
+  </div>
+
+  <!-- 검색창 + 새글작성 버튼 -->
+  <div class="action-bar">
+    <form class="search-form" method="GET" th:action="@{/question/search}">
+      <input type="hidden" name="categoryId" th:value="${categoryId}" />
+      <input type="text" name="keyword" class="search-input"
+             placeholder="질문 제목이나 내용을 검색하세요..."
+             th:value="${keyword}" />
+      <button type="submit" class="search-btn">🔍 검색</button>
+    </form>
+
+    <a th:href="@{/question/create(categoryId=${categoryId})}" class="create-btn">
+      ✏️ 새 질문 작성
+    </a>
+  </div>
+
+  <!-- 질문 목록 -->
+  <div th:if="${not #lists.isEmpty(questionList)}" class="question-table">
+    <table>
+      <thead>
+      <tr>
+        <th style="width: 80px;">번호</th>
+        <th>제목</th>
+        <th style="width: 150px;">작성날짜</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="question, stat : ${questionList}">
+        <td>
+          <span class="question-number" th:text="${stat.count}">1</span>
+        </td>
+        <td>
+          <a th:href="@{/question/detail/{id}(id=${question.id})}"
+             class="question-link"
+             th:text="${question.subject}">질문 제목</a>
+        </td>
+        <td class="question-date"
+            th:text="${#temporals.format(question.createDate, 'yyyy-MM-dd HH:mm')}">
+          2025-06-29 20:00
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 빈 목록 메시지 -->
+  <div th:if="${#lists.isEmpty(questionList)}" class="empty-message">
+    <span class="empty-icon">📝</span>
+    <p>아직 이 카테고리에 등록된 질문이 없습니다.</p>
+    <p>첫 번째 질문을 작성해보세요!</p>
+    <a th:href="@{/question/create(categoryId=${categoryId})}" class="create-btn" style="margin-top: 20px;">
+      ✏️ 첫 질문 작성하기
+    </a>
+  </div>
+</div>
+</body>
+</html>

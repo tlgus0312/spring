@@ -1,7 +1,213 @@
-textarea{
+/* 기본 스타일 */
+textarea {
     width: 100%;
 }
 
-input[type=submit]{
-    margin-top:10px
+input[type=submit] {
+    margin-top: 10px;
+}
+
+/* 다른 페이지용 카드 스타일 */
+.question-list .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.question-list .card {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.question-list .card:hover {
+    background-color: #f9f9f9;
+}
+
+.question-list .card-header {
+    padding: 1rem;
+}
+
+.question-list .card-header h2 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.question-list .card-content {
+    padding: 0 1rem 1rem 1rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.question-list .card.open .card-content {
+    max-height: 500px;
+}
+
+/* ================================ */
+/* 메인 페이지 전용 스타일 (충돌 방지) */
+/* ================================ */
+
+.main-page body {
+    font-family: 'Malgun Gothic', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f5f7fa;
+}
+
+.main-page .container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.main-page h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 40px;
+    font-size: 2.5em;
+}
+
+.main-page .category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    padding: 20px 0;
+}
+
+.main-page .category-item {
+    background: white !important;
+    border: none !important;
+    border-radius: 15px !important;
+    padding: 30px !important;
+    text-align: center !important;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    color: inherit !important;
+    display: block !important;
+    overflow: hidden !important;
+}
+
+.main-page .category-item:hover {
+    transform: translateY(-10px) !important;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15) !important;
+    text-decoration: none !important;
+    color: inherit !important;
+}
+
+.main-page .category-item.open {
+    transform: scale(1.05) !important;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3) !important;
+}
+
+.main-page .category-icon {
+    font-size: 3em !important;
+    margin-bottom: 20px !important;
+    display: block !important;
+    transition: all 0.3s ease !important;
+}
+
+.main-page .category-item.open .category-icon {
+    font-size: 3.5em !important;
+    transform: rotate(10deg) !important;
+}
+
+.main-page .category-name {
+    font-size: 1.5em !important;
+    font-weight: bold !important;
+    margin-bottom: 15px !important;
+    color: #2c3e50 !important;
+    transition: all 0.3s ease !important;
+}
+
+.main-page .category-item.open .category-name {
+    font-size: 1.7em !important;
+    color: #e74c3c !important;
+}
+
+.main-page .category-description {
+    color: #7f8c8d !important;
+    font-size: 1em !important;
+    line-height: 1.5 !important;
+    transition: all 0.3s ease !important;
+}
+
+.main-page .category-item.open .category-description {
+    color: #2c3e50 !important;
+    font-weight: bold !important;
+}
+
+/* 카테고리별 그라데이션 배경 */
+.main-page .category-1 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+}
+
+.main-page .category-2 {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+    color: white !important;
+}
+
+.main-page .category-3 {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+    color: white !important;
+}
+
+.main-page .category-4 {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%) !important;
+    color: white !important;
+}
+
+.main-page .category-1:hover,
+.main-page .category-2:hover,
+.main-page .category-3:hover,
+.main-page .category-4:hover {
+    color: white !important;
+}
+
+.main-page .category-1 .category-name,
+.main-page .category-1 .category-description {
+    color: white !important;
+}
+
+.main-page .category-2 .category-name,
+.main-page .category-2 .category-description {
+    color: white !important;
+}
+
+.main-page .category-3 .category-name,
+.main-page .category-3 .category-description {
+    color: white !important;
+}
+
+.main-page .category-4 .category-name,
+.main-page .category-4 .category-description {
+    color: white !important;
+}
+
+.main-page .category-1.open .category-name,
+.main-page .category-1.open .category-description {
+    color: white !important;
+}
+
+.main-page .category-2.open .category-name,
+.main-page .category-2.open .category-description {
+    color: white !important;
+}
+
+.main-page .category-3.open .category-name,
+.main-page .category-3.open .category-description {
+    color: white !important;
+}
+
+.main-page .category-4.open .category-name,
+.main-page .category-4.open .category-description {
+    color: white !important;
 }
