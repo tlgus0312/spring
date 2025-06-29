@@ -27,6 +27,9 @@ public class Question {
 
     private LocalDateTime createDate;
 
+    @Column(length = 100)
+    private String password;
+
     // ─── 카테고리 연관관계 ────────────────────
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")   // question 테이블의 category_id 컬럼과 매핑

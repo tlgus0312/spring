@@ -20,3 +20,9 @@
   <textarea name="content" id="content" rows="15"></textarea>
   <input type="submit" value="답변등록">
 </form>
+<hr>
+<div style="margin-top: 15px;">
+  <a th:href="@{|/question/delete/${question.id}|}" class="btn btn-danger">삭제하기</a>
+  <a th:href="@{|/question/modify/${question.id}|}" class="btn btn-warning">수정하기</a>
+  <a th:href="@{/question/list}" class="btn btn-secondary">목록으로</a>
+</div>

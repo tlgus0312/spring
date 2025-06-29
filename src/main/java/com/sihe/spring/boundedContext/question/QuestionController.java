@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -86,9 +87,10 @@ public class QuestionController {
     @PostMapping("/create")
     public String createQuestion(@RequestParam("subject") String subject,
                                  @RequestParam("content") String content,
-                                 @RequestParam("categoryId") Integer categoryId) {
+                                 @RequestParam("categoryId") Integer categoryId,
+                                 @RequestParam("password") String password){
 
-        questionService.createQuestion(subject, content, categoryId);
+        questionService.createQuestion(subject, content, categoryId, password);
 
         return "redirect:/question/category/" + categoryId;
     }
@@ -107,5 +109,58 @@ public class QuestionController {
         model.addAttribute("questionList", filtered);
         model.addAttribute("selectedSubject", subject);
         return "question_subject_list";
+    }
+    // 삭제 확인 페이지
+    @GetMapping("/delete/{id}")
+    public String deleteForm(@PathVariable("id") Integer id, Model model) {
+        Question question = questionService.getQuestion(id);
+        model.addAttribute("question", question);
+        return "question_delete";
+    }
+
+    // 삭제 처리
+    @PostMapping("/delete/{id}")
+    public String deleteQuestion(@PathVariable("id") Integer id,
+                                 @RequestParam("password") String password,
+                                 RedirectAttributes redirectAttributes) {
+
+        Question question = questionService.getQuestion(id);
+        Integer categoryId = question.getCategory().getId();
+
+        boolean deleted = questionService.deleteQuestion(id, password);
+
+        if (deleted) {
+            redirectAttributes.addFlashAttribute("message", "질문이 성공적으로 삭제되었습니다.");
+            redirectAttributes.addFlashAttribute("messageType", "success");
+        } else {
+            redirectAttributes.addFlashAttribute("message", "비밀번호가 틀렸습니다.");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/question/delete/" + id;
+        }
+
+        return "redirect:/question/category/" + categoryId;
+    }
+
+    @GetMapping("/modify/{id}")
+    public String questionModify(Model model, @PathVariable("id") Integer id) {
+        Question question = questionService.getQuestion(id);
+        model.addAttribute("question", question);
+        return "question_modify_form";
+    }
+    @PostMapping("/modify/{id}")
+    public String questionModify(@PathVariable("id") Integer id,
+                                 @RequestParam String subject,
+                                 @RequestParam String content,
+                                 @RequestParam String password) {
+
+        boolean success = questionService.modifyQuestion(id, subject, content, password);
+
+        if (!success) {
+            // 비밀번호가 틀리는 등 수정에 실패하면 다시 수정 페이지로
+            return "redirect:/question/modify/%d?error=true".formatted(id);
+        }
+
+        // 수정에 성공하면 상세 페이지로
+        return "redirect:/question/detail/%d".formatted(id);
     }
 }
