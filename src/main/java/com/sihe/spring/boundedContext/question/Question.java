@@ -30,6 +30,16 @@ public class Question {
     @Column(length = 100)
     private String password;
 
+    public boolean hasAdoptedAnswer() {
+        // answerList가 비어있으면 NullPointerException이 발생할 수 있으므로 확인
+        if (this.answerList == null || this.answerList.isEmpty()) {
+            return false;
+        }
+        // answerList를 순회하며 adopted가 true인 답변이 하나라도 있는지 확인
+        return this.answerList.stream()
+                .anyMatch(answer -> answer.isAdopted());
+    }
+
     // ─── 카테고리 연관관계 ────────────────────
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")   // question 테이블의 category_id 컬럼과 매핑

@@ -1,28 +1,368 @@
-<link rel="stylesheet" type="text/css" th:href="@{/style.css}">
-<h1>
-  <span th:text="${id}"></span>번
-  질문 상세내용
-</h1>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>질문 상세</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/style.css}">
+  <style>
+    body {
+      font-family: 'Malgun Gothic', -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fc;
+      line-height: 1.6;
+      color: #2c3e50;
+    }
 
-<h1 th:text="${question.subject}"></h1>
-<div th:text="${question.content}"></div>
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+    }
 
+    /* 질문 헤더 */
+    .question-header {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      margin-bottom: 25px;
+      border-left: 5px solid #3498db;
+    }
 
-<!--#lists.size(리스트):List에 size() 함수와 같다-->
-<h5 th:text="|${#lists.size(question.answerList)}개의 답변이 있습니다.|"></h5>
-<div>
-  <ul>
-    <li th:each="answer : ${question.answerList}" th:text="${answer.content}"></li>
-  </ul>
+    .question-number {
+      display: inline-block;
+      background: #3498db;
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .question-title {
+      font-size: 1.8em;
+      font-weight: bold;
+      margin: 0 0 20px 0;
+      color: #2c3e50;
+      word-break: keep-all;
+    }
+
+    .question-content {
+      font-size: 1.1em;
+      line-height: 1.8;
+      color: #555;
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      border-left: 4px solid #e74c3c;
+      white-space: pre-line;
+    }
+
+    /* 버튼 그룹 */
+    .button-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 25px 0;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95em;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+      transition: all 0.3s ease;
+      min-width: 100px;
+    }
+
+    .btn-danger {
+      background: #e74c3c;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #c0392b;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+    }
+
+    .btn-warning {
+      background: #f39c12;
+      color: white;
+    }
+
+    .btn-warning:hover {
+      background: #e67e22;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+    }
+
+    .btn-secondary {
+      background: #95a5a6;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #7f8c8d;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(149, 165, 166, 0.3);
+    }
+
+    .btn-adopt {
+      background: #27ae60;
+      color: white;
+      padding: 6px 12px;
+      font-size: 0.85em;
+      margin-left: 10px;
+    }
+
+    .btn-adopt:hover {
+      background: #2ecc71;
+    }
+
+    .btn-cancel-adopt {
+      background: #e67e22;
+      color: white;
+      padding: 6px 12px;
+      font-size: 0.85em;
+      margin-left: 10px;
+    }
+
+    .btn-cancel-adopt:hover {
+      background: #d35400;
+    }
+
+    /* 구분선 */
+    .divider {
+      border: none;
+      height: 2px;
+      background: linear-gradient(to right, #3498db, #e74c3c);
+      margin: 30px 0;
+      border-radius: 2px;
+    }
+
+    /* 답변 섹션 */
+    .answers-section {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      margin-bottom: 25px;
+    }
+
+    .answers-count {
+      font-size: 1.3em;
+      font-weight: bold;
+      color: #2c3e50;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #ecf0f1;
+    }
+
+    .answer-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .answer-item {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      border-left: 4px solid #3498db;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .answer-item:hover {
+      transform: translateX(5px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .answer-item.adopted {
+      border-left-color: #27ae60;
+      background: linear-gradient(135deg, #d5f4e6 0%, #f8f9fa 100%);
+    }
+
+    .answer-content {
+      font-size: 1.05em;
+      line-height: 1.7;
+      color: #2c3e50;
+      margin-bottom: 10px;
+      white-space: pre-line;
+    }
+
+    .adopted-badge {
+      display: inline-block;
+      background: #27ae60;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 15px;
+      font-size: 0.85em;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+
+    /* 답변 작성 폼 */
+    .answer-form-section {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .form-title {
+      font-size: 1.4em;
+      font-weight: bold;
+      color: #2c3e50;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #ecf0f1;
+    }
+
+    .form-textarea {
+      width: 100%;
+      min-height: 150px;
+      padding: 15px;
+      border: 2px solid #e0e6ed;
+      border-radius: 10px;
+      font-size: 1em;
+      font-family: inherit;
+      line-height: 1.6;
+      resize: vertical;
+      transition: border-color 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    .form-textarea:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+    .form-submit {
+      background: #3498db;
+      color: white;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .form-submit:hover {
+      background: #2980b9;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+    }
+
+    /* 반응형 디자인 */
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+
+      .question-header,
+      .answers-section,
+      .answer-form-section {
+        padding: 20px;
+      }
+
+      .question-title {
+        font-size: 1.5em;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <!-- 질문 상세 내용 -->
+  <div class="question-header">
+    <div class="question-number">
+      <span th:text="${question.id}"></span>번 질문
+    </div>
+    <h1 class="question-title" th:text="${question.subject}">질문 제목</h1>
+    <div class="question-content" th:text="${question.content}">질문 내용</div>
+  </div>
+
+  <!-- 버튼 그룹 -->
+  <div class="button-group">
+    <a th:href="@{|/question/delete/${question.id}|}" class="btn btn-danger">🗑️ 삭제하기</a>
+    <a th:href="@{|/question/modify/${question.id}|}" class="btn btn-warning">✏️ 수정하기</a>
+    <a th:href="@{|/question/category/${question.category.id}|}" class="btn btn-secondary">📋 목록으로</a>
+    <a th:href="@{|/report/question/${question.id}|}" class="btn btn-report">🚨 신고하기</a>
+  </div>
+
+  <hr class="divider">
+
+  <!-- 답변 섹션 -->
+  <div class="answers-section">
+    <h5 class="answers-count" th:text="|💬 ${#lists.size(question.answerList)}개의 답변이 있습니다.|">답변 개수</h5>
+
+    <ul class="answer-list">
+      <li th:each="answer : ${question.answerList}"
+          class="answer-item"
+          th:classappend="${answer.adopted} ? 'adopted' : ''">
+
+        <div class="answer-content" th:text="${answer.content}">답변 내용</div>
+
+        <div>
+          <span th:if="${answer.adopted}" class="adopted-badge">✅ 채택됨</span>
+
+          <!-- 채택하기 버튼 (채택된 답변이 없고, 현재 답변이 채택되지 않은 경우) -->
+          <a th:if="${!question.hasAdoptedAnswer() && !answer.adopted}"
+             th:href="@{|/answer/adopt/${answer.id}|}"
+             onclick="return confirm('이 답변을 채택하시겠습니까?');"
+             class="btn btn-adopt">
+            ⭐ 채택하기
+          </a>
+
+          <!-- 채택 취소 버튼 (현재 답변이 채택된 경우) -->
+          <a th:if="${answer.adopted}"
+             th:href="@{|/answer/cancel-adopt/${answer.id}|}"
+             onclick="return confirm('채택을 취소하시겠습니까?');"
+             class="btn btn-cancel-adopt">
+            ❌ 채택 취소
+          </a>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- 답변 작성 폼 -->
+  <div class="answer-form-section">
+    <h3 class="form-title">💭 답변 작성하기</h3>
+
+    <form th:action="@{|/answer/create/${question.id}|}" method="POST">
+                <textarea name="content"
+                          id="content"
+                          class="form-textarea"
+                          placeholder="도움이 되는 답변을 작성해주세요..."></textarea>
+
+      <input type="submit"
+             value="답변 등록"
+             class="form-submit">
+    </form>
+  </div>
 </div>
-
-<form th:action="@{|/answer/create/${question.id}|}" method="POST">
-  <textarea name="content" id="content" rows="15"></textarea>
-  <input type="submit" value="답변등록">
-</form>
-<hr>
-<div style="margin-top: 15px;">
-  <a th:href="@{|/question/delete/${question.id}|}" class="btn btn-danger">삭제하기</a>
-  <a th:href="@{|/question/modify/${question.id}|}" class="btn btn-warning">수정하기</a>
-  <a th:href="@{/question/list}" class="btn btn-secondary">목록으로</a>
-</div>
+</body>
+</html>
